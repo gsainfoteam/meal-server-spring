@@ -13,14 +13,19 @@ repositories {
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-
-	// lombok = Entity, DTO에서 getter, setter, toString, equals, hashCode 등을 자동으로 생성해주는 라이브러리
-	compileOnly 'org.projectlombok:lombok' // 2020년 이후 IntelliJ에서 Lombok plugin 자동 설치 돼있음
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'com.h2database:h2'
+	compileOnly 'org.projectlombok:lombok'
+	runtimeOnly 'mysql:mysql-connector-java'
 	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.junit.platform:junit-platform-launcher:1.5.0'
+	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.5.0'
+	testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.5.0'
+
 }
+
 
 tasks.named('test') {
 	useJUnitPlatform()
