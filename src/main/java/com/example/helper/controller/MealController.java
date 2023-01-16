@@ -29,7 +29,7 @@ public class MealController {
     public @ResponseBody String createMeal(MealWrapper mealWrapper) {
         // 여기 구현해주세 222
         Meal meal = mealWrapper.getMeal();
-
+        // merge test
 //        Meal saved = mealService.save(meal);
 
         return "saved"; // Responsebody 넣어서 보내는거 해보세요
