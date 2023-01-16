@@ -1,25 +1,28 @@
 package com.example.helper.controller;
 import com.example.helper.dto.MealWrapper;
 import com.example.helper.entity.Meal;
-import com.example.helper.repository.MealRepository;
-//import com.example.helper.service.MealService;
+import com.example.helper.service.MealService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
+
+
+@RestController
 @RequestMapping(path = "/meals", produces = "application/json;charset=UTF-8")
 @Slf4j
 public class MealController {
 
     @Autowired
-//    private MealService mealService;
+    private MealService mealService;
 
     @GetMapping("/all")
     public String hello() {
-        return "Hello HELPERs";
+        return "Hello HELPERs. 초기 세팅 완료.";
     }
 
     @PostMapping("/create")

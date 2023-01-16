@@ -1,7 +1,9 @@
 package com.example.helper.repository;
 
 import com.example.helper.entity.Meal;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public class SqliteMealRepository implements MealRepository {
     @Override
     public Meal save(Meal meal) {
