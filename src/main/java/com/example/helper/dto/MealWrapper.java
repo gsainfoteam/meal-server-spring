@@ -5,5 +5,8 @@ import lombok.Getter;
 
 @Getter
 public class MealWrapper {
+    public MealWrapper(Meal meal) {
+        this.meal = meal;
+    }
     private Meal meal;
 }
