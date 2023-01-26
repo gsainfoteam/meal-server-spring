@@ -20,11 +20,15 @@ public class SqlMealRepository implements MealRepository {
     }
 
     @Override
-    public Optional<Meal> findIdByDateTitleKind(String title, String meal_date, String kind_of_meal) {
-        List<Meal> result = em.createQuery("select m from Member m where m.title = :title and m.meal_date = :meal_date and m.kind_of_meal = :kind_of_meal", Meal.class)
-                .setParameter("title", title)
-                .setParameter("meal_date", meal_date)
-                .setParameter("kind_of_meal", kind_of_meal)
+    public Optional<Meal> findByPk(Integer bldgType, Integer langType, Integer dateType, Integer kindType, String date) {
+        List<Meal> result = em.createQuery("select m from Meal m where " +
+                        "m.bldgType = :bldgType and m.langType = :langType and m.dateType = :dateType " +
+                        "and m.kindType = :kindType and m.date = :date", Meal.class)
+                .setParameter("bldgType", bldgType)
+                .setParameter("langType", langType)
+                .setParameter("dateType", dateType)
+                .setParameter("kindType", kindType)
+                .setParameter("date", date)
                 .getResultList();
         return result.stream().findAny();
     }

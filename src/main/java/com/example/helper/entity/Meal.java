@@ -21,16 +21,22 @@ public class Meal {
     @Id
     @GeneratedValue
     private Long id;
-
     @Column
-    private String title;
-
+    private Integer bldgType;
     @Column
-    private String meal_date;
-
+    private Integer langType;
     @Column
-    private String kind_of_meal;
-
+    private Integer dateType;
+    @Column
+    private Integer kindType;
+    @Column
+    private String bldg;
+    @Column
+    private String date;
+    @Column
+    private String kind;
     @Column
     private String menu;
+    @Column
+    private String special;
 }

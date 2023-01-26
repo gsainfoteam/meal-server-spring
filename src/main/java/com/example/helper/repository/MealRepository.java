@@ -7,7 +7,7 @@ import java.util.Optional;
 public interface MealRepository {
     Meal save(Meal meal);
 
-    Optional<Meal> findIdByDateTitleKind(String title, String meal_date, String kind_of_meal);
+    Optional<Meal> findByPk(Integer bldgType, Integer langType, Integer dateType, Integer kindType, String date);
 
     Optional<Meal> findById(Long mealId);
 
