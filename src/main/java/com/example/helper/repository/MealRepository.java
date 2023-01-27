@@ -2,12 +2,14 @@ package com.example.helper.repository;
 
 import com.example.helper.entity.Meal;
 
+import java.util.Optional;
+
 public interface MealRepository {
     Meal save(Meal meal);
 
-    Long findIdByDateTitleKind(String title, String meal_date, String kind_of_meal);
+    Optional<Meal> findByPk(Integer bldgType, Integer langType, Integer dateType, Integer kindType, String date);
 
-    Meal findById(Long mealId);
+    Optional<Meal> findById(Long mealId);
 
     Long delete(Long mealId);
 }

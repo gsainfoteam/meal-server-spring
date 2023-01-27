@@ -1,25 +1,21 @@
 package com.example.helper.dto;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import jakarta.persistence.Column;
+import lombok.*;
 
 @ToString
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Mealdto {
-
-
-    public Mealdto(String title, String meal_date, String kind_of_meal, String menu) {
-        this.title = title;
-        this.meal_date = meal_date;
-        this.kind_of_meal = kind_of_meal;
-        this.menu = menu;
-    }
-
-    private String title;
-    private String meal_date;
-    private String kind_of_meal;
+    private Integer bldgType;
+    private Integer langType;
+    private Integer dateType;
+    private Integer kindType;
+    private String bldg;
+    private String date;
+    private String kind;
     private String menu;
-
+    private String special;
 }
