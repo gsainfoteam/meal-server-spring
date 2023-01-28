@@ -1,6 +1,9 @@
 package com.example.helper.controller;
+import com.example.helper.dto.DateMealDto;
+import com.example.helper.dto.DateReqDto;
 import com.example.helper.dto.Mealdto;
 import com.example.helper.entity.Meal;
+import com.example.helper.service.DateMealService;
 import com.example.helper.service.MealService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,6 +25,9 @@ public class MealController {
 
     @Autowired
     private MealService mealService;
+
+    @Autowired
+    private DateMealService dateMealService;
 
     @GetMapping("/all")
     public String hello() {
@@ -231,7 +237,7 @@ public class MealController {
     @GetMapping("/date")
     public List<DateMealDto> DateMealRead(DateReqDto dateReqDto) {
 
-        List<DateMealDto> dateMealDtoList = mealService.getDateMeal(dateReqDto);
+        List<DateMealDto> dateMealDtoList = dateMealService.getDateMeal(dateReqDto);
 
         return dateMealDtoList;
     }
