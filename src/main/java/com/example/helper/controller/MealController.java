@@ -234,10 +234,26 @@ public class MealController {
         return result;
     }
 
-    @GetMapping("/date")
-    public List<DateMealDto> DateMealRead(DateReqDto dateReqDto) {
+    // FE쪽에서 query에 담아주면 아래처럼 dto 객체 하나만 req로 받으면 되서 코드 깔끔함.
+    // DateMealDto dateMealDtoList = dateMealService.getDateMeal(dateReqDto);
+    // 근데 FE에서 보낼때 parameter 일일이 적기 귀찮으니 pathvariable로 받아서 처리
+    @GetMapping("/date/{year}/{month}/{day}/{bldgType}/{langType}")
+    public DateMealDto DateMealRead(
+            @PathVariable("langType") Integer langType,
+            @PathVariable("bldgType") Integer bldgType,
+            @PathVariable("year") Integer year,
+            @PathVariable("month") Integer month,
+            @PathVariable("day") Integer  day) {
 
-        List<DateMealDto> dateMealDtoList = dateMealService.getDateMeal(dateReqDto);
+        DateReqDto dateReqDto = DateReqDto.builder()
+                .langType(langType)
+                .bldgType(bldgType)
+                .year(year.toString())
+                .month(month.toString())
+                .date(day.toString())
+                .build();
+
+        DateMealDto dateMealDtoList = dateMealService.getDateMenus(dateReqDto);
 
         return dateMealDtoList;
     }
