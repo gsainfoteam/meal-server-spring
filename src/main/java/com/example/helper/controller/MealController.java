@@ -10,12 +10,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.springframework.web.server.ResponseStatusException;
 
 
 @RestController // @Controller + @ResponseBody. return이 view가 아닌, http body에 직접 쓰여짐.
@@ -253,8 +255,12 @@ public class MealController {
                 .date(day.toString())
                 .build();
 
-        DateMealDto dateMealDtoList = dateMealService.getDateMenus(dateReqDto);
-
-        return dateMealDtoList;
+        try {
+            DateMealDto dateMealDto = dateMealService.getDateMenus(dateReqDto);
+            return dateMealDto;
+        } catch (IllegalStateException e) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_ACCEPTABLE, e.getMessage());
+        }
     }
 }

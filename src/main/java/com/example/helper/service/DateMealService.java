@@ -28,7 +28,9 @@ public class DateMealService {
                 .build();
 
         // TODO: exception handling(target data is not in DB)
-
+        if (checkMenusEmpty(result)) {
+            throw new IllegalStateException("해당 날짜의 식단이 존재하지 않습니다.");
+        }
         return result;
     }
 
@@ -70,5 +72,12 @@ public class DateMealService {
             result = str;
         }
         return result;
+    }
+
+    public boolean checkMenusEmpty(DateMealDto dateMealDto) {
+        return dateMealDto.getBreakfast().isEmpty() &&
+                dateMealDto.getLunch().isEmpty() &&
+                dateMealDto.getDinner().isEmpty() &&
+                dateMealDto.getLunch_corner().isEmpty();
     }
 }
