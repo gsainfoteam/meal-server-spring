@@ -50,9 +50,13 @@ public class MealController {
         BeanUtils.copyProperties(mealDto, meal);
 
         // DB Save
-        Long saved = mealService.mealCreate(meal);
-
-        return "saved";
+        try {
+            Long saved = mealService.mealCreate(meal);
+            return "saved";
+        } catch (IllegalStateException e) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_ACCEPTABLE, e.getMessage());
+        }
     }
 
     @PostMapping("/kor")

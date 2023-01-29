@@ -1,5 +1,6 @@
 package com.example.helper.entity;
 
+import com.example.helper.constant.Types;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -45,9 +46,15 @@ public class Meal {
         menu += this.date + " " + this.kind + "\n\n";
         menu += this.bldg + "\n\n";
         menu += this.menu;
-        if(kindType == 1) {
-            menu += "\n\\코너\\\n";
-            menu += this.special;
+        if(kindType == Types.KIND_LUNCH.getType()) {
+            if(langType == Types.LANG_KOR.getType()) {
+                menu += "\n\\코너\\\n";
+                menu += this.special;
+            }
+            else if(langType == Types.LANG_ENG.getType()) {
+                menu += "\n\\Coner\\\n";
+                menu += this.special;
+            }
         }
         return menu;
     }
