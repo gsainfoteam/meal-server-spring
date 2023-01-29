@@ -75,6 +75,7 @@ public class MealService {
 
         Optional<Meal> result = sqlMealRepository.findByDate(Types.BLDG2_1ST.getType(), langType, kindType, date);
 
+        // TODO: 함수로 분리
         if(result.isEmpty()) {
             //throw new IllegalStateException(Messages.EXIST_MEAL_ERROR.getMessages());
             if(langType == 0) {
@@ -89,10 +90,11 @@ public class MealService {
     }
 
     private Boolean specInputValidation(String dateCustom, String bld) {
-        // len = 0 or null or ...
-        Boolean ret = true;
-
-        return ret;
+        // input arguments : null, empty, " "
+        if (dateCustom == null || bld == null || dateCustom.isBlank() || bld.isBlank()) {
+            return false;
+        }
+        return true;
     }
 
     public String getNowKorMeal() {
@@ -103,25 +105,50 @@ public class MealService {
         return getNowMeal(Types.LANG_ENG.getType());
     }
 
-    public String getSpecKorMeal(String dateCustom, String bld) {
+    public String getSpecKorMeal(String dateCustom, String bld, LocalDateTime currentDateTime) {
+        // test를 위해 LocalDateTime 객체를 argument로 받도록 변경
+
         if (!specInputValidation(dateCustom, bld)) {
             return Messages.NO_MEAL_KOR.getMessages();
         }
 
-        if(dateCustom.equals(SpecMealInputsKor.TODAY.getInputs())) {
-            // 오늘
-        }
-        else if(dateCustom.equals(SpecMealInputsKor.TOMORROW.getInputs())) {
-            // 내일
-        }
-        else if(dateCustom.length() == 1) {
-            // 요일
-        }
-        else if((dateCustom.charAt(dateCustom.length() - 1) + "").equals(SpecMealInputsKor.DAY.getInputs())) {
-            // 특정날짜
+        try {
+            if (dateCustom.equals(SpecMealInputsKor.TOMORROW.getInputs())) {
+                // 내일
+                currentDateTime = currentDateTime.plusDays(1);
+            } else if (dateCustom.length() == 1) {
+                // 요일
+                Integer dateDiff = getDateDifference(dateCustom, currentDateTime);
+                currentDateTime = currentDateTime.plusDays(dateDiff);
+            } else if ((dateCustom.charAt(dateCustom.length() - 1) + "").equals(SpecMealInputsKor.DAY.getInputs())) {
+                // 특정날짜
+                currentDateTime = currentDateTime.withDayOfMonth(
+                        Integer.parseInt(dateCustom.substring(0, dateCustom.length() - 1)));
+            }
+        } catch (Exception e) {
+            return Messages.INVALID_DATE.getMessages();
         }
 
-        return "2023-01-27 조식\n\n제2학생회관1층\n\n흰밥*김가루양념밥\n";
+        String date = currentDateTime.getYear() + "-";
+        date += String.format("%02d", currentDateTime.getMonth().getValue()) + "-";
+        date += String.format("%02d", currentDateTime.getDayOfMonth()) + "";
+
+        Optional<Meal> result = sqlMealRepository.findByDate(
+                Types.BLDG2_1ST.getType(),
+                Types.LANG_KOR.getType(),
+                SpecMealInputsKor.getTypeByString(bld),
+                date);
+
+        // TODO : 존재하지 않는 식단이면, error message 반환.
+        if(result.isEmpty()) {
+            return Messages.NO_MEAL_KOR.getMessages();
+        }
+
+        return result.get().generateMenu();
+    }
+
+    public Integer getDateDifference(String day, LocalDateTime currentDateTime) {
+        return (Integer) currentDateTime.getDayOfWeek().getValue() - SpecMealInputsKor.getTypeByString(day);
     }
     public Boolean dateFormatValidation(String date) {
         Boolean ret = true;
