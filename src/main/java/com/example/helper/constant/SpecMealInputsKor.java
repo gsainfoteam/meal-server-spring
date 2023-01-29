@@ -34,6 +34,6 @@ public enum SpecMealInputsKor {
             if (each.getInputs().equals(str)) {
                 return each.getInputValue();
             }
-        return null;
+        return -1;
     }
 }

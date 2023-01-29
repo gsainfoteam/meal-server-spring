@@ -7,6 +7,8 @@ import com.example.helper.service.DateMealService;
 import com.example.helper.service.MealService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Map.Entry;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -95,7 +97,8 @@ public class MealController {
         String dateCustom = params.get("dateCustom").toString();
         String bld =  params.get("bld").toString();
 
-        String specMeal = mealService.getSpecKorMeal(dateCustom, bld);
+        LocalDateTime currentDateTime = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
+        String specMeal = mealService.getSpecKorMeal(dateCustom, bld, currentDateTime);
         Map<String, Object> responseBody = mealService.responseMeal(specMeal);
 
         return responseBody;
