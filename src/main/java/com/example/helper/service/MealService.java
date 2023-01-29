@@ -56,16 +56,22 @@ public class MealService {
         }
         else if(19 <= hour && hour < 24) {
             kindType = 0;
+            currentDateTime = currentDateTime.plusDays(1);
         }
         else {
             kindType = 0;
-            currentDateTime.plusDays(1);
+            currentDateTime = currentDateTime.plusDays(1);
         }
+
+        log.info("currentDateTime Obj : " + currentDateTime.toString());
 
         String date = currentDateTime.getYear() + "-";
         date += String.format("%02d", currentDateTime.getMonth().getValue()) + "-";
         date += String.format("%02d", currentDateTime.getDayOfMonth()) + "";
 
+        log.info("date Obj : " + date);
+        log.info("langType Obj : " + langType);
+        log.info("kindType Obj : " + kindType);
         Optional<Meal> result = sqlMealRepository.findByDate(2, langType, kindType, date);
 
         if(result.isEmpty()) {
