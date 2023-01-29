@@ -7,16 +7,14 @@ import com.example.helper.service.DateMealService;
 import com.example.helper.service.MealService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.http.HttpServletRequest;
+import java.util.Map.Entry;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -86,16 +84,66 @@ public class MealController {
         return responseBody;
     }
 
-    @PostMapping("/speckor")
-    public Map<String, Object> readSpecKorMeal(@RequestBody Map<String, Map<String, Map<String, String>>> requestBody) throws JsonProcessingException {
+    @PostMapping("/spectest")
+    public Map<String, Object> readSpecKortest(@RequestBody Map<String, Object> requestBody) throws JsonProcessingException {
         // input : 날짜요일내일 + 아점저 + 1/2학
         // output : 한국어 식단이 포함된 JSON (단, JSON은 카톡 서버가 받을 수 있는 형식이여야 함.)
 
-        Map<String, Map<String, String>> action = requestBody.get("action");
-        Map<String, String> params = action.get("params");
-        String dateCustom = params.get("dateCustom");
-        String bld = params.get("bld");
+        Map<String, Object> action = new HashMap<>();
+        action.put("action", requestBody.get("action"));
 
+        Map<String, Object> params = new HashMap<>();
+        params.put("params", action.get("action"));
+
+        Map<String, Object> paramssss = new HashMap<>();
+        paramssss.put("params", params.get("params"));
+
+        String dateCustom = (String) paramssss.get("dateCustom");
+        String bld = (String) paramssss.get("bld");
+
+        log.info("req body : " + requestBody.toString());
+        log.info("action body : " + action.toString());
+        log.info("params body : " + params.toString());
+        log.info("paramssss body : " + paramssss.toString());
+
+        for (Entry<String, Object> entrySet : requestBody.entrySet()) {
+            log.info(entrySet.getKey() + " : " + entrySet.getValue());
+        }
+
+        log.info("###########RESULT############");
+        log.info(dateCustom + " " + bld);
+        log.info(dateCustom + " " + bld);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, Object> action2 = objectMapper.convertValue(requestBody.get("action"), Map.class);
+        Map<String, Object> params2 = objectMapper.convertValue(action2.get("params"), Map.class);
+        log.info(params2.get("dateCustom").toString() + " " + params2.get("bld").toString());
+
+        //Map<String, String> params2 = new HashMap<>();
+        //params2.put()
+        //log.info(params2.get("dateCustom") + " " + params2.get("bld"));
+
+        String specMeal = mealService.getSpecKorMeal(dateCustom, bld);
+        Map<String, Object> responseBody = mealService.responseMeal(specMeal);
+
+        // if need to stratify.
+        // ObjectMapper objectMapper = new ObjectMapper();
+        // String result = objectMapper.writeValueAsString(responseBody);
+
+        return responseBody;
+    }
+
+    @PostMapping("/speckor")
+    public Map<String, Object> readSpecKorMeal(@RequestBody Map<String, Map<String, Map<String, Object>>> requestBody) throws JsonProcessingException {
+        // input : 날짜요일내일 + 아점저 + 1/2학
+        // output : 한국어 식단이 포함된 JSON (단, JSON은 카톡 서버가 받을 수 있는 형식이여야 함.)
+
+        Map<String, Map<String, Object>> action = requestBody.get("action");
+        Map<String, Object> params = action.get("params");
+        String dateCustom = (String) params.get("dateCustom");
+        String bld = (String) params.get("bld");
+
+        log.info(dateCustom + " " + bld);
         log.info(dateCustom + " " + bld);
 
         String specMeal = mealService.getSpecKorMeal(dateCustom, bld);
@@ -109,14 +157,14 @@ public class MealController {
     }
 
     @PostMapping("/speceng")
-    public Map<String, Object> readSpecEngMeal(@RequestBody Map<String, Map<String, Map<String, String>>> requestBody) throws JsonProcessingException {
+    public Map<String, Object> readSpecEngMeal(@RequestBody Map<String, Map<String, Map<String, Object>>> requestBody) throws JsonProcessingException {
         // input : 날짜요일내일 + 아점저 + 1/2학
         // output : 영어 식단이 포함된 JSON (단, JSON은 카톡 서버가 받을 수 있는 형식이여야 함.)
 
-        Map<String, Map<String, String>> action = requestBody.get("action");
-        Map<String, String> params = action.get("params");
-        String dateCustom = params.get("dateCustom");
-        String bld = params.get("bld");
+        Map<String, Map<String, Object>> action = requestBody.get("action");
+        Map<String, Object> params = action.get("params");
+        String dateCustom = (String) params.get("dateCustom");
+        String bld = (String) params.get("bld");
 
         log.info(dateCustom + " " + bld);
 
