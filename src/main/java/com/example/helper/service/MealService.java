@@ -148,7 +148,7 @@ public class MealService {
     }
 
     public Integer getDateDifference(String day, LocalDateTime currentDateTime) {
-        return (Integer) currentDateTime.getDayOfWeek().getValue() - SpecMealInputsKor.getTypeByString(day);
+        return SpecMealInputsKor.getTypeByString(day) - (Integer) currentDateTime.getDayOfWeek().getValue();
     }
     public Boolean dateFormatValidation(String date) {
         Boolean ret = true;
