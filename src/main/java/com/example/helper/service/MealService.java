@@ -1,5 +1,9 @@
 package com.example.helper.service;
 
+import com.example.helper.constant.Messages;
+import com.example.helper.constant.SpecMealInputsEng;
+import com.example.helper.constant.SpecMealInputsKor;
+import com.example.helper.constant.Types;
 import com.example.helper.dto.DateMealDto;
 import com.example.helper.dto.DateReqDto;
 import com.example.helper.entity.Meal;
@@ -8,6 +12,8 @@ import com.example.helper.repository.SqlMealRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,7 +45,7 @@ public class MealService {
         // DB 중복 체크
         sqlMealRepository.findByPk(meal.getBldgType(), meal.getLangType(), meal.getDateType(), meal.getKindType(), meal.getDate())
                 .ifPresent(m -> {
-                    throw new IllegalStateException("이미 존재하는 식단입니다.");
+                    throw new IllegalStateException(Messages.EXIST_MEAL_ERROR.getMessages());
                 });
     }
 
@@ -63,62 +69,226 @@ public class MealService {
             currentDateTime = currentDateTime.plusDays(1);
         }
 
-        log.info("currentDateTime Obj : " + currentDateTime.toString());
-
         String date = currentDateTime.getYear() + "-";
         date += String.format("%02d", currentDateTime.getMonth().getValue()) + "-";
         date += String.format("%02d", currentDateTime.getDayOfMonth()) + "";
 
-        log.info("date Obj : " + date);
-        log.info("langType Obj : " + langType);
-        log.info("kindType Obj : " + kindType);
-        Optional<Meal> result = sqlMealRepository.findByDate(2, langType, kindType, date);
+        Optional<Meal> result = sqlMealRepository.findByDate(Types.BLDG2_1ST.getType(), langType, kindType, date);
 
+        // TODO: 함수로 분리
         if(result.isEmpty()) {
-            //throw new IllegalStateException("조건에 맞는 식단이 존재하지 않습니다.");
+            //throw new IllegalStateException(Messages.EXIST_MEAL_ERROR.getMessages());
             if(langType == 0) {
-                return "식단 준비중입니다.";
+                return Messages.NO_MEAL_KOR.getMessages();
             }
             else {
-                return "The meal is being prepared.";
+                return Messages.NO_MEAL_ENG.getMessages();
             }
         }
         Meal meal = result.get();
         return meal.generateMenu();
     }
 
+    private Boolean specInputValidation(String dateCustom, String bld) {
+        // input arguments : null, empty, " "
+        if (dateCustom == null || bld == null || dateCustom.isBlank() || bld.isBlank()) {
+            return false;
+        }
+        return true;
+    }
+
     public String getNowKorMeal() {
-        return getNowMeal(0);
+        return getNowMeal(Types.LANG_KOR.getType());
     }
 
     public String getNowEngMeal() {
-        return getNowMeal(1);
+        return getNowMeal(Types.LANG_ENG.getType());
     }
 
-    public String getSpecKorMeal(String dateCustom, String bld) {
-        //TODO sqlMealRepository.findSpecKorMeal
-        return "2023-01-27 조식\n\n제2학생회관1층\n\n흰밥*김가루양념밥\n";
+    public String getSpecKorMeal(String dateCustom, String bld, LocalDateTime currentDateTime) {
+        // test를 위해 LocalDateTime 객체를 argument로 받도록 변경
+
+        if (!specInputValidation(dateCustom, bld)) {
+            return Messages.NO_MEAL_KOR.getMessages();
+        }
+
+        try {
+            if (dateCustom.equals(SpecMealInputsKor.TOMORROW.getInputs())) {
+                // 내일
+                currentDateTime = currentDateTime.plusDays(1);
+            } else if (dateCustom.length() == 1) {
+                // 요일
+                Integer dateDiff = getDateDifference(dateCustom, currentDateTime);
+                currentDateTime = currentDateTime.plusDays(dateDiff);
+            } else if ((dateCustom.charAt(dateCustom.length() - 1) + "").equals(SpecMealInputsKor.DAY.getInputs())) {
+                // 특정날짜
+                currentDateTime = currentDateTime.withDayOfMonth(
+                        Integer.parseInt(dateCustom.substring(0, dateCustom.length() - 1)));
+            }
+        } catch (Exception e) {
+            return Messages.INVALID_DATE.getMessages();
+        }
+
+        String date = currentDateTime.getYear() + "-";
+        date += String.format("%02d", currentDateTime.getMonth().getValue()) + "-";
+        date += String.format("%02d", currentDateTime.getDayOfMonth()) + "";
+
+        Optional<Meal> result = sqlMealRepository.findByDate(
+                Types.BLDG2_1ST.getType(),
+                Types.LANG_KOR.getType(),
+                SpecMealInputsKor.getTypeByString(bld),
+                date);
+
+        // TODO : 존재하지 않는 식단이면, error message 반환.
+        if(result.isEmpty()) {
+            return Messages.NO_MEAL_KOR.getMessages();
+        }
+
+        return result.get().generateMenu();
     }
 
+    public Integer getDateDifference(String day, LocalDateTime currentDateTime) {
+        return SpecMealInputsKor.getTypeByString(day) - (Integer) currentDateTime.getDayOfWeek().getValue();
+    }
+    public Boolean dateFormatValidation(String date) {
+        Boolean ret = true;
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            sdf.setLenient(false);
+            sdf.parse(date);
+
+        } catch(ParseException e) {
+            ret = false;
+        }
+        return  ret;
+    }
     public String getSpecEngMeal(String dateCustom, String bld) {
-        //TODO sqlMealRepository.findSpecEngMeal
-        return "2023-01-27 Breakfast\n\nStudent Union Bldg.2 1st floor\n\nWhite rice*Seasoned rice with seaweed\n";
+        if (!specInputValidation(dateCustom, bld)) {
+            return Messages.NO_MEAL_ENG.getMessages();
+        }
+        LocalDateTime currentDateTime = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
+
+        Integer year = currentDateTime.getYear();
+        Integer month = currentDateTime.getMonth().getValue();
+        Integer day = currentDateTime.getDayOfMonth();
+        Integer currentDateNumber = currentDateTime.getDayOfWeek().getValue();
+
+        Integer dateCustomLen = dateCustom.length();
+        if(dateCustom.equals(SpecMealInputsEng.TODAY.getInputs())) {
+            // 오늘
+        }
+        else if(dateCustom.equals(SpecMealInputsEng.TOMORROW.getInputs())) {
+            // 내일
+            currentDateTime = currentDateTime.plusDays(1);
+            year = currentDateTime.getYear();
+            month = currentDateTime.getMonth().getValue();
+            day = currentDateTime.getDayOfMonth();
+        }
+        else if(dateCustomLen > 2) {
+            String dateCustomPostfix = dateCustom.substring(dateCustomLen - 2, dateCustomLen);
+            if( dateCustomPostfix.equals(SpecMealInputsEng.DAY_1.getInputs()) ||
+                    dateCustomPostfix.equals(SpecMealInputsEng.DAY_2.getInputs()) ||
+                    dateCustomPostfix.equals(SpecMealInputsEng.DAY_3.getInputs()) ||
+                    dateCustomPostfix.equals(SpecMealInputsEng.DAY_OTHER.getInputs())) {
+                // 특정날짜
+                String dateCustomPrefix = (dateCustomLen == 3) ? dateCustom.substring(0, 1) : dateCustom.substring(0, 2);
+
+                try{
+                    day = Integer.valueOf(dateCustomPrefix);
+                }
+                catch (NumberFormatException ex){
+                    day = 0;
+                }
+            }
+            else {
+                //요일
+                Integer dateNumber = 0;
+                if(dateCustom.equals(SpecMealInputsEng.MON.getInputs())) {
+                    dateNumber = SpecMealInputsEng.MON.getInputValue();
+                }
+                else if(dateCustom.equals(SpecMealInputsEng.TUE.getInputs())) {
+                    dateNumber = SpecMealInputsEng.TUE.getInputValue();
+                }
+                else if(dateCustom.equals(SpecMealInputsEng.WED.getInputs())) {
+                    dateNumber = SpecMealInputsEng.WED.getInputValue();
+                }
+                else if(dateCustom.equals(SpecMealInputsEng.THR.getInputs())) {
+                    dateNumber = SpecMealInputsEng.THR.getInputValue();
+                }
+                else if(dateCustom.equals(SpecMealInputsEng.FRI.getInputs())) {
+                    dateNumber = SpecMealInputsEng.FRI.getInputValue();
+                }
+                else if(dateCustom.equals(SpecMealInputsEng.SAT.getInputs())) {
+                    dateNumber = SpecMealInputsEng.SAT.getInputValue();
+                }
+                else if(dateCustom.equals(SpecMealInputsEng.SUN.getInputs())) {
+                    dateNumber = SpecMealInputsEng.SUN.getInputValue();
+                }
+
+                if(dateNumber == 0) {
+                    day = 0;
+                }
+                else {
+                    Integer dateDiff = dateNumber - currentDateNumber;
+                    Integer dateDiffAbs = (dateDiff > 0) ? dateDiff : dateDiff * -1;
+                    currentDateTime = (dateDiff > 0) ? currentDateTime.plusDays(dateDiffAbs) : currentDateTime.minusDays(dateDiffAbs);
+                    year = currentDateTime.getYear();
+                    month = currentDateTime.getMonth().getValue();
+                    day = currentDateTime.getDayOfMonth();
+                }
+
+            }
+        }
+
+        Integer kindType = -1;
+        if(bld.equals(SpecMealInputsEng.BREAKFAST.getInputs())) {
+            kindType = SpecMealInputsEng.BREAKFAST.getInputValue();
+        }
+        else if(bld.equals(SpecMealInputsEng.LUNCH.getInputs())) {
+            kindType = SpecMealInputsEng.LUNCH.getInputValue();
+        }
+        else if(bld.equals(SpecMealInputsEng.DINNER.getInputs())) {
+            kindType = SpecMealInputsEng.DINNER.getInputValue();
+        }
+
+        if( (day < 1 && day > 31) || (kindType < 0 || kindType > 2)) {
+            return Messages.NO_MEAL_ENG.getMessages();
+        }
+
+        String date = year + "-";
+        date += String.format("%02d", month) + "-";
+        date += String.format("%02d", day) + "";
+
+        //형식이 잘못되면 Query 에서 NULL 을 반환한다.
+        //if(!dateFormatValidation(date)) {
+        //    return Messages.NO_MEAL_ENG.getMessages();
+        //}
+
+        Optional<Meal> result = sqlMealRepository.findByDate(Types.BLDG2_1ST.getType(), Types.LANG_ENG.getType(), kindType, date);
+
+        if(result.isEmpty()) {
+            //throw new IllegalStateException(Messages.EXIST_MEAL_ERROR.getMessages());
+            return Messages.NO_MEAL_ENG.getMessages();
+        }
+        Meal meal = result.get();
+        return meal.generateMenu();
     }
 
     public Map<String, Object> responseMeal(String menu) {
         // Response Body Construct
-        // const responseBody = {
-        //          version: "2.0",
+        // responseBody: {
+        //      version: "2.0",
         //          template: {
         //              outputs: [
+        //                  {
+        //                      simpleText:
         //                          {
-        //                              simpleText: {
-        //                                      text: nowMeal
-        //                                  }
+        //                              text: meal
         //                           }
-        //                        ]
-        //                     }
-        //                  };
+        //                   }
+        //              ]
+        //       }
+        // };
 
         Map<String, Object> simpleText =  new HashMap<>();
         simpleText.put("text", menu);
@@ -135,6 +305,10 @@ public class MealService {
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("version", "2.0");
         responseBody.put("template", template);
+
+        // stratify json to string
+        // ObjectMapper objectMapper = new ObjectMapper();
+        // String result = objectMapper.writeValueAsString(responseBody);
 
         return responseBody;
     }

@@ -1,13 +1,21 @@
 package com.example.helper.service;
 
+import com.example.helper.constant.SpecMealInputsEng;
 import com.example.helper.repository.SqlMealRepository;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.List;
 
+@SpringBootTest
 public class MealServiceTest {
+    @Autowired
+    private MealService mealService;
     @Test
     void getNowTest() {
         LocalDateTime currentDateTime = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
@@ -37,6 +45,49 @@ public class MealServiceTest {
         System.out.println(day);
         System.out.println(hour);
         System.out.println(kindType);
+    }
+
+    @Test
+    void specEngTest() {
+        List<String> dateCustomTestList = new ArrayList<>();
+        for(int i = 1 ; i <= 31 ; i++) {
+            String tc = i + "";
+            if(i == 1) {
+                tc += "st";
+            }
+            else if(i == 2) {
+                tc += "nd";
+            }
+            else if(i == 3) {
+                tc += "rd";
+            }
+            else {
+                tc += "th";
+            }
+            dateCustomTestList.add(tc);
+        }
+        dateCustomTestList.add(SpecMealInputsEng.TODAY.getInputs());
+        dateCustomTestList.add(SpecMealInputsEng.TOMORROW.getInputs());
+        dateCustomTestList.add(SpecMealInputsEng.MON.getInputs());
+        dateCustomTestList.add(SpecMealInputsEng.THR.getInputs());
+        dateCustomTestList.add(SpecMealInputsEng.WED.getInputs());
+        dateCustomTestList.add(SpecMealInputsEng.THR.getInputs());
+        dateCustomTestList.add(SpecMealInputsEng.FRI.getInputs());
+        dateCustomTestList.add(SpecMealInputsEng.SAT.getInputs());
+        dateCustomTestList.add(SpecMealInputsEng.SUN.getInputs());
+
+        List<String> bldTestList = new ArrayList<>();
+        bldTestList.add(SpecMealInputsEng.BREAKFAST.getInputs());
+        bldTestList.add(SpecMealInputsEng.LUNCH.getInputs());
+        bldTestList.add(SpecMealInputsEng.DINNER.getInputs());
+
+        for(String dateCustom : dateCustomTestList) {
+            for(String bld : bldTestList) {
+                String specMeal = mealService.getSpecEngMeal(dateCustom, bld);
+                System.out.println(dateCustom + " " + bld);
+                System.out.println(specMeal);
+            }
+        }
     }
 
 }
