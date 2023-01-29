@@ -1,5 +1,8 @@
 package com.example.helper.service;
 
+import com.example.helper.constant.Messages;
+import com.example.helper.constant.SpecMealInputsKor;
+import com.example.helper.constant.Types;
 import com.example.helper.dto.DateMealDto;
 import com.example.helper.dto.DateReqDto;
 import com.example.helper.entity.Meal;
@@ -39,7 +42,7 @@ public class MealService {
         // DB 중복 체크
         sqlMealRepository.findByPk(meal.getBldgType(), meal.getLangType(), meal.getDateType(), meal.getKindType(), meal.getDate())
                 .ifPresent(m -> {
-                    throw new IllegalStateException("이미 존재하는 식단입니다.");
+                    throw new IllegalStateException(Messages.EXIST_MEAL_ERROR.getMessages());
                 });
     }
 
@@ -63,62 +66,83 @@ public class MealService {
             currentDateTime = currentDateTime.plusDays(1);
         }
 
-        log.info("currentDateTime Obj : " + currentDateTime.toString());
-
         String date = currentDateTime.getYear() + "-";
         date += String.format("%02d", currentDateTime.getMonth().getValue()) + "-";
         date += String.format("%02d", currentDateTime.getDayOfMonth()) + "";
 
-        log.info("date Obj : " + date);
-        log.info("langType Obj : " + langType);
-        log.info("kindType Obj : " + kindType);
-        Optional<Meal> result = sqlMealRepository.findByDate(2, langType, kindType, date);
+        Optional<Meal> result = sqlMealRepository.findByDate(Types.BLDG2_1ST.getType(), langType, kindType, date);
 
         if(result.isEmpty()) {
-            //throw new IllegalStateException("조건에 맞는 식단이 존재하지 않습니다.");
+            //throw new IllegalStateException(Messages.EXIST_MEAL_ERROR.getMessages());
             if(langType == 0) {
-                return "식단 준비중입니다.";
+                return Messages.NO_MEAL_KOR.getMessages();
             }
             else {
-                return "The meal is being prepared.";
+                return Messages.NO_MEAL_ENG.getMessages();
             }
         }
         Meal meal = result.get();
         return meal.generateMenu();
     }
 
+    private Boolean specInputValidation(String dateCustom, String bld) {
+        // len = 0 or null or ...
+        Boolean ret = true;
+
+        return ret;
+    }
+
     public String getNowKorMeal() {
-        return getNowMeal(0);
+        return getNowMeal(Types.LANG_KOR.getType());
     }
 
     public String getNowEngMeal() {
-        return getNowMeal(1);
+        return getNowMeal(Types.LANG_ENG.getType());
     }
 
     public String getSpecKorMeal(String dateCustom, String bld) {
-        //TODO sqlMealRepository.findSpecKorMeal
+        if (!specInputValidation(dateCustom, bld)) {
+            return Messages.NO_MEAL_KOR.getMessages();
+        }
+
+        if(dateCustom.equals(SpecMealInputsKor.TODAY.getInputs())) {
+            // 오늘
+        }
+        else if(dateCustom.equals(SpecMealInputsKor.TOMORROW.getInputs())) {
+            // 내일
+        }
+        else if(dateCustom.length() == 1) {
+            // 요일
+        }
+        else if((dateCustom.charAt(dateCustom.length() - 1) + "").equals(SpecMealInputsKor.DAY.getInputs())) {
+            // 특정날짜
+        }
+
         return "2023-01-27 조식\n\n제2학생회관1층\n\n흰밥*김가루양념밥\n";
     }
 
     public String getSpecEngMeal(String dateCustom, String bld) {
-        //TODO sqlMealRepository.findSpecEngMeal
+        if (!specInputValidation(dateCustom, bld)) {
+            return Messages.NO_MEAL_ENG.getMessages();
+        }
         return "2023-01-27 Breakfast\n\nStudent Union Bldg.2 1st floor\n\nWhite rice*Seasoned rice with seaweed\n";
     }
 
     public Map<String, Object> responseMeal(String menu) {
         // Response Body Construct
-        // const responseBody = {
-        //          version: "2.0",
+        // responseBody: {
+        //      version: "2.0",
         //          template: {
         //              outputs: [
+        //                  {
+        //                      simpleText:
         //                          {
-        //                              simpleText: {
-        //                                      text: nowMeal
-        //                                  }
+        //                              text: meal
         //                           }
-        //                        ]
-        //                     }
-        //                  };
+        //                   }
+        //              ]
+        //       }
+        // };
 
         Map<String, Object> simpleText =  new HashMap<>();
         simpleText.put("text", menu);
@@ -135,6 +159,10 @@ public class MealService {
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("version", "2.0");
         responseBody.put("template", template);
+
+        // stratify json to string
+        // ObjectMapper objectMapper = new ObjectMapper();
+        // String result = objectMapper.writeValueAsString(responseBody);
 
         return responseBody;
     }

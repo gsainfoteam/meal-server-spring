@@ -9,7 +9,14 @@ public enum Types {
     KIND_BREAKFAST(0),
     KIND_LUNCH(1),
     KIND_DINNER(2),
-    KIND_LUNCH_CORNER(3);
+    KIND_LUNCH_CORNER(3),
+    DATE_MON(0),
+    DATE_TUE(1),
+    DATE_WED(2),
+    DATE_THR(3),
+    DATE_FRI(4),
+    DATE_SAT(5),
+    DATE_SUN(6);
 
     private Integer type;
 
