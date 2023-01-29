@@ -72,6 +72,7 @@ public class MealService {
 
         Optional<Meal> result = sqlMealRepository.findByDate(Types.BLDG2_1ST.getType(), langType, kindType, date);
 
+        // TODO: 함수로 분리
         if(result.isEmpty()) {
             //throw new IllegalStateException(Messages.EXIST_MEAL_ERROR.getMessages());
             if(langType == 0) {
@@ -86,10 +87,11 @@ public class MealService {
     }
 
     private Boolean specInputValidation(String dateCustom, String bld) {
-        // len = 0 or null or ...
-        Boolean ret = true;
-
-        return ret;
+        // input arguments : null, empty, " "
+        if (dateCustom == null || bld == null || dateCustom.isBlank() || bld.isBlank()) {
+            return false;
+        }
+        return true;
     }
 
     public String getNowKorMeal() {
@@ -105,8 +107,19 @@ public class MealService {
             return Messages.NO_MEAL_KOR.getMessages();
         }
 
+        LocalDateTime currentDateTime = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
+
         if(dateCustom.equals(SpecMealInputsKor.TODAY.getInputs())) {
             // 오늘
+            String date = currentDateTime.getYear() + "-";
+            date += String.format("%02d", currentDateTime.getMonth().getValue()) + "-";
+            date += String.format("%02d", currentDateTime.getDayOfMonth()) + "";
+
+            Optional<Meal> result = sqlMealRepository.findByDate(
+                    Types.BLDG2_1ST.getType(),
+                    Types.LANG_KOR.getType(),
+                    SpecMealInputsKor.getTypeByString(bld),
+                    date);
         }
         else if(dateCustom.equals(SpecMealInputsKor.TOMORROW.getInputs())) {
             // 내일

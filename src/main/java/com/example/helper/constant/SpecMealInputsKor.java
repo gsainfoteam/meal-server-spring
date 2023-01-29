@@ -28,4 +28,12 @@ public enum SpecMealInputsKor {
         return input;
     }
     public Integer getInputValue() { return inputValue; }
+
+    public static Integer getTypeByString(String str){
+        for(SpecMealInputsKor each : values())
+            if (each.getInputs().equals(str)) {
+                return each.getInputValue();
+            }
+        return null;
+    }
 }
