@@ -1,6 +1,9 @@
 package com.example.helper.controller;
+import com.example.helper.dto.DateMealDto;
+import com.example.helper.dto.DateReqDto;
 import com.example.helper.dto.Mealdto;
 import com.example.helper.entity.Meal;
+import com.example.helper.service.DateMealService;
 import com.example.helper.service.MealService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -8,15 +11,17 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.springframework.web.server.ResponseStatusException;
 
 
-@RestController
+@RestController // @Controller + @ResponseBody. return이 view가 아닌, http body에 직접 쓰여짐.
 @RequestMapping(path = "/meals", produces = "application/json;charset=UTF-8")
 @Slf4j
 public class MealController {
@@ -24,17 +29,21 @@ public class MealController {
     @Autowired
     private MealService mealService;
 
+    @Autowired
+    private DateMealService dateMealService;
+
     @GetMapping("/all")
     public String hello() {
         return "Hello HELPERs. 초기 세팅 완료.";
     }
 
     @PostMapping("/test")
-    public @ResponseBody void test(String testStr) {
+    public void test(String testStr) {
         log.info(testStr);
     }
+
     @PostMapping("/create")
-    public @ResponseBody String createMeal(@RequestBody Mealdto mealDto) {
+    public String createMeal(@RequestBody Mealdto mealDto) {
         // input  : 식단 json
         // output : None
 
@@ -55,7 +64,6 @@ public class MealController {
 
         String nowMeal = mealService.getNowKorMeal();
         Map<String, Object> responseBody = mealService.responseMeal(nowMeal);
-
         // if need to stratify.
         // ObjectMapper objectMapper = new ObjectMapper();
         // String result = objectMapper.writeValueAsString(responseBody);
@@ -120,5 +128,33 @@ public class MealController {
         // String result = objectMapper.writeValueAsString(responseBody);
 
         return responseBody;
+    }
+
+    // FE쪽에서 query에 담아주면 아래처럼 dto 객체 하나만 req로 받으면 되서 코드 깔끔함.
+    // DateMealDto dateMealDtoList = dateMealService.getDateMeal(dateReqDto);
+    // 근데 FE에서 보낼때 parameter 일일이 적기 귀찮으니 pathvariable로 받아서 처리
+    @GetMapping("/date/{year}/{month}/{day}/{bldgType}/{langType}")
+    public DateMealDto DateMealRead(
+            @PathVariable("langType") Integer langType,
+            @PathVariable("bldgType") Integer bldgType,
+            @PathVariable("year") Integer year,
+            @PathVariable("month") Integer month,
+            @PathVariable("day") Integer  day) {
+
+        DateReqDto dateReqDto = DateReqDto.builder()
+                .langType(langType)
+                .bldgType(bldgType)
+                .year(year.toString())
+                .month(month.toString())
+                .date(day.toString())
+                .build();
+
+        try {
+            DateMealDto dateMealDto = dateMealService.getDateMenus(dateReqDto);
+            return dateMealDto;
+        } catch (IllegalStateException e) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_ACCEPTABLE, e.getMessage());
+        }
     }
 }
