@@ -11,7 +11,7 @@ public enum SpecMealInputsEng {
     THR("Thr", Types.DATE_THR.getType()),
     FRI("Fri", Types.DATE_FRI.getType()),
     SAT("Sat", Types.DATE_SAT.getType()),
-    SUM("Sun", Types.DATE_SUN.getType()),
+    SUN("Sun", Types.DATE_SUN.getType()),
     DAY_1("st"),
     DAY_2("nd"),
     DAY_3("rd"),
