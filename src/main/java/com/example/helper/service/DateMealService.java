@@ -53,6 +53,7 @@ public class DateMealService {
             result = meal.get().getMenu();
             if (kindType.equals(Types.KIND_LUNCH_CORNER.getType())) {
                 result = meal.get().getSpecial();
+                result = (result.equals("\n\n")) ? "\n" : result;
             }
         }
         return result;
