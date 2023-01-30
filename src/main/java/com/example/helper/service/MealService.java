@@ -64,9 +64,8 @@ public class MealService {
             kindType = 0;
             currentDateTime = currentDateTime.plusDays(1);
         }
-        else {
+        else { // 0 <= hour && hour < 9
             kindType = 0;
-            currentDateTime = currentDateTime.plusDays(1);
         }
 
         String date = currentDateTime.getYear() + "-";
