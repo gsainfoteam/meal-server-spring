@@ -49,11 +49,18 @@ public class DateMealService {
                 temp,
                 conv2DateStr(dateReqDto.getYear(), dateReqDto.getMonth(), dateReqDto.getDate()));
 
+        // TODO: 함수 분리, TEST CODE 작성
         if (meal.isPresent()) {
             result = meal.get().getMenu();
+
             if (kindType.equals(Types.KIND_LUNCH_CORNER.getType())) {
                 result = meal.get().getSpecial();
                 result = (result.equals("\n\n")) ? "\n" : result;
+            }
+            else if (kindType.equals(Types.KIND_LUNCH.getType())) {
+                result = (result.substring(result.length() - 2).equals("\n\n")) ?
+                        result.substring(0, result.length() - 1) :
+                        result;
             }
         }
         return result;
