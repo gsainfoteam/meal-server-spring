@@ -55,9 +55,10 @@ public class DateMealService {
 
             if (kindType.equals(Types.KIND_LUNCH_CORNER.getType())) {
                 result = meal.get().getSpecial();
-                result = (result.equals("\n\n")) ? "\n" : result;
+                result = (result.equals("")) ? "\n" : result;
             }
             else if (kindType.equals(Types.KIND_LUNCH.getType())) {
+                // 이제 parsing 단계에서 이 예외는 발생안하게 고쳤으나, 혹시 모르니 남겨둠
                 result = (result.substring(result.length() - 2).equals("\n\n")) ?
                         result.substring(0, result.length() - 1) :
                         result;
