@@ -3,20 +3,18 @@ import com.example.helper.dto.DateMealDto;
 import com.example.helper.dto.DateReqDto;
 import com.example.helper.dto.Mealdto;
 import com.example.helper.entity.Meal;
-import com.example.helper.service.DateMealService;
-import com.example.helper.service.MealService;
+import com.example.helper.service.DeviceService;
+import com.example.helper.service.ChatbotService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Map.Entry;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.Map;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -24,13 +22,13 @@ import org.springframework.web.server.ResponseStatusException;
 @RestController // @Controller + @ResponseBody. return이 view가 아닌, http body에 직접 쓰여짐.
 @RequestMapping(path = "/meals", produces = "application/json;charset=UTF-8")
 @Slf4j
-public class MealController {
+public class ChatbotController {
 
     @Autowired
-    private MealService mealService;
+    private ChatbotService chatbotService;
 
     @Autowired
-    private DateMealService dateMealService;
+    private DeviceService deviceService;
 
     @GetMapping("/all")
     public String hello() {
@@ -53,7 +51,7 @@ public class MealController {
 
         // DB Save
         try {
-            Long saved = mealService.mealCreate(meal);
+            Long saved = chatbotService.mealCreate(meal);
             return "saved";
         } catch (IllegalStateException e) {
             throw new ResponseStatusException(
@@ -66,8 +64,8 @@ public class MealController {
         // input  : None (먼저 서버에서 현재 시간 측정)
         // output : 한국어 식단이 포함된 JSON (단, JSON은 카톡 서버가 받을 수 있는 형식이여야 함.)
 
-        String nowMeal = mealService.getNowKorMeal();
-        Map<String, Object> responseBody = mealService.responseMeal(nowMeal);
+        String nowMeal = chatbotService.getNowKorMeal();
+        Map<String, Object> responseBody = chatbotService.responseMeal(nowMeal);
 
         return responseBody;
     }
@@ -77,8 +75,8 @@ public class MealController {
         // input  : None (먼저 서버에서 현재 시간 측정)
         // output : 영어 식단이 포함된 JSON (단, JSON은 카톡 서버가 받을 수 있는 형식이여야 함.)
 
-        String nowMeal = mealService.getNowEngMeal();
-        Map<String, Object> responseBody = mealService.responseMeal(nowMeal);
+        String nowMeal = chatbotService.getNowEngMeal();
+        Map<String, Object> responseBody = chatbotService.responseMeal(nowMeal);
 
         return responseBody;
     }
@@ -102,8 +100,8 @@ public class MealController {
         String bld =  params.get("bld").toString();
 
         LocalDateTime currentDateTime = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
-        String specMeal = mealService.getSpecKorMeal(dateCustom, bld, currentDateTime);
-        Map<String, Object> responseBody = mealService.responseMeal(specMeal);
+        String specMeal = chatbotService.getSpecKorMeal(dateCustom, bld, currentDateTime);
+        Map<String, Object> responseBody = chatbotService.responseMeal(specMeal);
 
         return responseBody;
     }
@@ -121,15 +119,12 @@ public class MealController {
         String dateCustom = params.get("dateCustom").toString();
         String bld =  params.get("bld").toString();
 
-        String specMeal = mealService.getSpecEngMeal(dateCustom, bld);
-        Map<String, Object> responseBody = mealService.responseMeal(specMeal);
+        String specMeal = chatbotService.getSpecEngMeal(dateCustom, bld);
+        Map<String, Object> responseBody = chatbotService.responseMeal(specMeal);
 
         return responseBody;
     }
 
-    // FE쪽에서 query에 담아주면 아래처럼 dto 객체 하나만 req로 받으면 되서 코드 깔끔함.
-    // DateMealDto dateMealDtoList = dateMealService.getDateMeal(dateReqDto);
-    // 근데 FE에서 보낼때 parameter 일일이 적기 귀찮으니 pathvariable로 받아서 처리
     @GetMapping("/date/{year}/{month}/{day}/{bldgType}/{langType}")
     public DateMealDto DateMealRead(
             @PathVariable("langType") Integer langType,
@@ -147,7 +142,7 @@ public class MealController {
                 .build();
 
         try {
-            DateMealDto dateMealDto = dateMealService.getDateMenus(dateReqDto);
+            DateMealDto dateMealDto = deviceService.getDateMenus(dateReqDto);
             return dateMealDto;
         } catch (IllegalStateException e) {
             throw new ResponseStatusException(
