@@ -1,8 +1,6 @@
 package com.example.helper.service;
 
 import com.example.helper.constant.SpecMealInputsEng;
-import com.example.helper.repository.SqlMealRepository;
-import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,9 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SpringBootTest
-public class MealServiceTest {
+public class ChatbotServiceTest {
     @Autowired
-    private MealService mealService;
+    private ChatbotService chatbotService;
     @Test
     void getNowTest() {
         LocalDateTime currentDateTime = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
@@ -83,7 +81,7 @@ public class MealServiceTest {
 
         for(String dateCustom : dateCustomTestList) {
             for(String bld : bldTestList) {
-                String specMeal = mealService.getSpecEngMeal(dateCustom, bld);
+                String specMeal = chatbotService.getSpecEngMeal(dateCustom, bld);
                 System.out.println(dateCustom + " " + bld);
                 System.out.println(specMeal);
             }

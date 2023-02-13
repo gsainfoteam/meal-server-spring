@@ -4,12 +4,8 @@ import com.example.helper.constant.Messages;
 import com.example.helper.constant.SpecMealInputsEng;
 import com.example.helper.constant.SpecMealInputsKor;
 import com.example.helper.constant.Types;
-import com.example.helper.dto.DateMealDto;
-import com.example.helper.dto.DateReqDto;
 import com.example.helper.entity.Meal;
-import com.example.helper.repository.MealRepository;
 import com.example.helper.repository.SqlMealRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 
 import java.text.ParseException;
@@ -26,12 +22,12 @@ import java.util.*;
 @Service
 @Transactional
 @Slf4j
-public class MealService {
+public class ChatbotService {
 
     @Autowired(required = true)
     private SqlMealRepository sqlMealRepository;
 
-    public MealService(SqlMealRepository sqlMealRepository) {
+    public ChatbotService(SqlMealRepository sqlMealRepository) {
         this.sqlMealRepository = sqlMealRepository;
     }
 

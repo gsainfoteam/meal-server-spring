@@ -12,13 +12,19 @@ public class DateMealDto {
     private String breakfast;
     private String lunch;
     private String lunch_corner;
+    private String lunch_bldg1_2;
     private String dinner;
 
     @Builder
-    public DateMealDto(String breakfast, String lunch, String lunch_corner, String dinner) {
+    public DateMealDto(String breakfast,
+                       String lunch,
+                       String lunch_corner,
+                       String lunch_bldg1_2,
+                       String dinner) {
         this.breakfast = breakfast;
         this.lunch = lunch;
         this.lunch_corner = lunch_corner;
+        this.lunch_bldg1_2 = lunch_bldg1_2;
         this.dinner = dinner;
     }
 }
