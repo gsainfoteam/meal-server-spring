@@ -68,10 +68,12 @@ public class ChatbotService {
         date += String.format("%02d", currentDateTime.getMonth().getValue()) + "-";
         date += String.format("%02d", currentDateTime.getDayOfMonth()) + "";
 
-        Optional<Meal> result = sqlMealRepository.findByDate(Types.BLDG2_1ST.getType(), langType, kindType, date);
+        Optional<Meal> result0 = sqlMealRepository.findByDate(Types.BLDG1_1ST.getType(), langType, kindType, date);
+        Optional<Meal> result1 = sqlMealRepository.findByDate(Types.BLDG1_2ND.getType(), langType, kindType, date);
+        Optional<Meal> result2 = sqlMealRepository.findByDate(Types.BLDG2_1ST.getType(), langType, kindType, date);
 
         // TODO: 함수로 분리
-        if(result.isEmpty()) {
+        if(result0.isEmpty()|| result1.isEmpty()||result2.isEmpty()) {
             //throw new IllegalStateException(Messages.EXIST_MEAL_ERROR.getMessages());
             if(langType == 0) {
                 return Messages.NO_MEAL_KOR.getMessages();
@@ -80,8 +82,31 @@ public class ChatbotService {
                 return Messages.NO_MEAL_ENG.getMessages();
             }
         }
-        Meal meal = result.get();
-        return meal.generateMenu();
+        Meal meal0 = result0.get();
+        Meal meal1 = result1.get();
+        Meal meal2 = result2.get();
+
+        String result ="";
+        result = resultMenu(meal0, meal1, meal2);
+        return result;
+    }
+    public String resultMenu(Meal meal0, Meal meal1, Meal meal2){
+        String result = meal2.getDate() + " " + meal2.getKind();
+        if(meal2.getDateType().equals(Types.DATE_SAT.getType()) || meal2.getDateType().equals(Types.DATE_SUN.getType())){
+            result += meal2.generateMenu(); //주말, 2학 메뉴만
+        }
+        else{
+            if(meal2.getKindType().equals(Types.KIND_LUNCH.getType())) { //평일 점심,1학1층 + 1학2층 + 2학
+                result += meal2.generateMenu()
+                        + "\n-------------------\n" + meal1.generateMenu()
+                        + "\n-------------------\n" + meal2.generateMenu();
+            }
+            else{
+                result += meal1.generateMenu() + "\n-------------------\n" + meal2.generateMenu();
+                //평일 아침/저녁, 1학1층+ 2학
+            }
+        }
+        return result;
     }
 
     private Boolean specInputValidation(String dateCustom, String bld) {
