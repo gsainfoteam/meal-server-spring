@@ -82,31 +82,54 @@ public class ChatbotService {
                 return Messages.NO_MEAL_ENG.getMessages();
             }
         }
-        Meal meal0 = result0.get();
-        Meal meal1 = result1.get();
-        Meal meal2 = result2.get();
 
         String result ="";
+        Meal meal0 = new Meal();
+        Meal meal1 = new Meal();
+        Meal meal2 = new Meal();
+        if(!result0.isEmpty()){meal0 = result0.get();}
+        if(!result1.isEmpty()){meal1 = result1.get();}
+        if(!result2.isEmpty()){meal2 = result2.get();}
+
         result = resultMenu(meal0, meal1, meal2);
         return result;
     }
+
+
     public String resultMenu(Meal meal0, Meal meal1, Meal meal2){
-        String result = meal2.getDate() + " " + meal2.getKind();
-        if(meal2.getDateType().equals(Types.DATE_SAT.getType()) || meal2.getDateType().equals(Types.DATE_SUN.getType())){
-            result += meal2.generateMenu(); //주말, 2학 메뉴만
+        Calendar today = Calendar.getInstance();
+        String result = today.get(Calendar.YEAR)+"-"+(today.get(Calendar.MONTH)+1)+ "-"+ today.get(Calendar.DATE);
+
+
+        if(today.get(Calendar.HOUR_OF_DAY)>19 || today.get(Calendar.HOUR_OF_DAY)<9){result += " 조식\n";}
+        else if(today.get(Calendar.HOUR_OF_DAY)>9 && today.get(Calendar.HOUR_OF_DAY)<13) {result += " 중식\n";}
+        else if(today.get(Calendar.HOUR_OF_DAY)>13 && today.get(Calendar.HOUR_OF_DAY)<19) {result += " 석식\n";}
+
+        if(today.get(Calendar.DAY_OF_WEEK) == 6 && today.get(Calendar.HOUR_OF_DAY)>19){
+            result += meal2.generateMenu(); //금요일 저녁엔 토요일(주말) 아침을 보여줘야함
+            return result;}
+
+        if(today.get(Calendar.DAY_OF_WEEK) == 1 && today.get(Calendar.HOUR_OF_DAY)>19){
+            result += meal0.generateMenu() + "\n-------------------\n" + meal2.generateMenu();
+            return result;}//일요일 저녁엔 월요일(평일) 아침을 보여줘야함
+
+        if(today.get(Calendar.DAY_OF_WEEK) == 7 || today.get(Calendar.DAY_OF_WEEK) == 1 ){
+            result += meal2.generateMenu(); //주말, 2학 메뉴만 7:토요일,  1:일요일
+            return result;
         }
         else{
-            if(meal2.getKindType().equals(Types.KIND_LUNCH.getType())) { //평일 점심,1학1층 + 1학2층 + 2학
+            if(today.get(Calendar.HOUR_OF_DAY)>9 && today.get(Calendar.HOUR_OF_DAY)<13){ //평일 점심,1학1층 + 1학2층 + 2학
                 result += meal0.generateMenu()
                         + "\n-------------------\n" + meal1.generateMenu()
                         + "\n-------------------\n" + meal2.generateMenu();
+                return result;
             }
             else{
-                result += meal1.generateMenu() + "\n-------------------\n" + meal2.generateMenu();
+                result += meal0.generateMenu() + "\n-------------------\n" + meal2.generateMenu();
+                return result;
                 //평일 아침/저녁, 1학1층+ 2학
             }
         }
-        return result;
     }
 
     private Boolean specInputValidation(String dateCustom, String bld) {
