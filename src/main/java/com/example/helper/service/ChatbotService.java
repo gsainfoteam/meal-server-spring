@@ -73,7 +73,7 @@ public class ChatbotService {
         Optional<Meal> result2 = sqlMealRepository.findByDate(Types.BLDG2_1ST.getType(), langType, kindType, date);
 
         // TODO: 함수로 분리
-        if(result0.isEmpty()|| result1.isEmpty()||result2.isEmpty()) {
+        if(result0.isEmpty() && result1.isEmpty() && result2.isEmpty()) {
             //throw new IllegalStateException(Messages.EXIST_MEAL_ERROR.getMessages());
             if(langType == 0) {
                 return Messages.NO_MEAL_KOR.getMessages();
@@ -97,7 +97,7 @@ public class ChatbotService {
         }
         else{
             if(meal2.getKindType().equals(Types.KIND_LUNCH.getType())) { //평일 점심,1학1층 + 1학2층 + 2학
-                result += meal2.generateMenu()
+                result += meal0.generateMenu()
                         + "\n-------------------\n" + meal1.generateMenu()
                         + "\n-------------------\n" + meal2.generateMenu();
             }
