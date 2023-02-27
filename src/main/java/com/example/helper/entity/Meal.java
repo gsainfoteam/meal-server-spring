@@ -40,10 +40,11 @@ public class Meal {
     private String menu;
     @Column
     private String special;
-
+    //평일 아,저 1학 1층 + 2학
+    //평일 점심이면 1학 1층 + 1학 2층 + 2학
+    // 주말이면 2학만
     public String generateMenu() {
         String menu = "";
-        menu += this.date + " " + this.kind + "\n\n";
         menu += this.bldg + "\n\n";
         menu += this.menu;
         if(kindType == Types.KIND_LUNCH.getType()) {
@@ -59,3 +60,4 @@ public class Meal {
         return menu;
     }
 }
+
