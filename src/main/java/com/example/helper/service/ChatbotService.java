@@ -101,16 +101,16 @@ public class ChatbotService {
         String result = today.get(Calendar.YEAR)+"-"+(today.get(Calendar.MONTH)+1)+ "-"+ today.get(Calendar.DATE);
 
 
-        if(today.get(Calendar.HOUR_OF_DAY)>=19 || today.get(Calendar.HOUR_OF_DAY)<9){result += " 조식\n";}
-        else if(today.get(Calendar.HOUR_OF_DAY)>=9 && today.get(Calendar.HOUR_OF_DAY)<13) {result += " 중식\n";}
-        else if(today.get(Calendar.HOUR_OF_DAY)>=13 && today.get(Calendar.HOUR_OF_DAY)<19) {result += " 석식\n";}
+        if(today.get(Calendar.HOUR_OF_DAY)>=19 || today.get(Calendar.HOUR_OF_DAY)<9){result += " 조식\n\n";}
+        else if(today.get(Calendar.HOUR_OF_DAY)>=9 && today.get(Calendar.HOUR_OF_DAY)<13) {result += " 중식\n\n";}
+        else if(today.get(Calendar.HOUR_OF_DAY)>=13 && today.get(Calendar.HOUR_OF_DAY)<19) {result += " 석식\n\n";}
 
-        if(today.get(Calendar.DAY_OF_WEEK) == 6 && today.get(Calendar.HOUR_OF_DAY)>19){
+        if(today.get(Calendar.DAY_OF_WEEK) == 6 && today.get(Calendar.HOUR_OF_DAY)>=19){
             result += meal2.generateMenu(); //금요일 저녁엔 토요일(주말) 아침을 보여줘야함
             return result;}
 
-        if(today.get(Calendar.DAY_OF_WEEK) == 1 && today.get(Calendar.HOUR_OF_DAY)>19){
-            result += meal0.generateMenu() + "\n-------------------\n" + meal2.generateMenu();
+        if(today.get(Calendar.DAY_OF_WEEK) == 1 && today.get(Calendar.HOUR_OF_DAY)>=19){
+            result += meal0.generateMenu() + "\n-------------------\n\n" + meal2.generateMenu();
             return result;}//일요일 저녁엔 월요일(평일) 아침을 보여줘야함
 
         if(today.get(Calendar.DAY_OF_WEEK) == 7 || today.get(Calendar.DAY_OF_WEEK) == 1 ){
@@ -118,14 +118,14 @@ public class ChatbotService {
             return result;
         }
         else{
-            if(today.get(Calendar.HOUR_OF_DAY)>9 && today.get(Calendar.HOUR_OF_DAY)<13){ //평일 점심,1학1층 + 1학2층 + 2학
+            if(today.get(Calendar.HOUR_OF_DAY)>=9 && today.get(Calendar.HOUR_OF_DAY)<13){ //평일 점심,1학1층 + 1학2층 + 2학
                 result += meal0.generateMenu()
-                        + "\n-------------------\n" + meal1.generateMenu()
-                        + "\n-------------------\n" + meal2.generateMenu();
+                        + "\n-------------------\n\n" + meal1.generateMenu()
+                        + "\n-------------------\n\n" + meal2.generateMenu();
                 return result;
             }
             else{
-                result += meal0.generateMenu() + "\n-------------------\n" + meal2.generateMenu();
+                result += meal0.generateMenu() + "\n-------------------\n\n" + meal2.generateMenu();
                 return result;
                 //평일 아침/저녁, 1학1층+ 2학
             }
