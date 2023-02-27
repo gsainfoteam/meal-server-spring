@@ -101,9 +101,9 @@ public class ChatbotService {
         String result = today.get(Calendar.YEAR)+"-"+(today.get(Calendar.MONTH)+1)+ "-"+ today.get(Calendar.DATE);
 
 
-        if(today.get(Calendar.HOUR_OF_DAY)>19 || today.get(Calendar.HOUR_OF_DAY)<9){result += " 조식\n";}
-        else if(today.get(Calendar.HOUR_OF_DAY)>9 && today.get(Calendar.HOUR_OF_DAY)<13) {result += " 중식\n";}
-        else if(today.get(Calendar.HOUR_OF_DAY)>13 && today.get(Calendar.HOUR_OF_DAY)<19) {result += " 석식\n";}
+        if(today.get(Calendar.HOUR_OF_DAY)>=19 || today.get(Calendar.HOUR_OF_DAY)<9){result += " 조식\n";}
+        else if(today.get(Calendar.HOUR_OF_DAY)>=9 && today.get(Calendar.HOUR_OF_DAY)<13) {result += " 중식\n";}
+        else if(today.get(Calendar.HOUR_OF_DAY)>=13 && today.get(Calendar.HOUR_OF_DAY)<19) {result += " 석식\n";}
 
         if(today.get(Calendar.DAY_OF_WEEK) == 6 && today.get(Calendar.HOUR_OF_DAY)>19){
             result += meal2.generateMenu(); //금요일 저녁엔 토요일(주말) 아침을 보여줘야함
