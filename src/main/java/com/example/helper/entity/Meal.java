@@ -47,12 +47,12 @@ public class Meal {
         String menu = "";
         menu += this.bldg + "\n\n";
         menu += this.menu;
-        if(kindType == Types.KIND_LUNCH.getType()) {
-            if(langType == Types.LANG_KOR.getType()) {
+//        if(kindType == Types.KIND_LUNCH.getType()) {
+        if(!special.isBlank()) {
+            if (langType == Types.LANG_KOR.getType()) {
                 menu += "\n\\코너\\\n";
                 menu += this.special;
-            }
-            else if(langType == Types.LANG_ENG.getType()) {
+            } else if (langType == Types.LANG_ENG.getType()) {
                 menu += "\n\\Coner\\\n";
                 menu += this.special;
             }

@@ -23,6 +23,7 @@ public class DeviceService {
     public DateMealDto getDateMenus(DateReqDto dateReqDto) {
         DateMealDto result = DateMealDto.builder()
                 .breakfast(getMenuFromMeal(dateReqDto, Types.KIND_BREAKFAST.getType()))
+                .breakfast_corner(getMenuFromMeal(dateReqDto, Types.KIND_BREAKFAST_CORNER.getType()))
                 .lunch(getMenuFromMeal(dateReqDto, Types.KIND_LUNCH.getType()))
                 .lunch_corner(getMenuFromMeal(dateReqDto, Types.KIND_LUNCH_CORNER.getType()))
                 .lunch_bldg1_2(getMenuFromMeal(dateReqDto, Types.KIND_LUNCH_BLDG1_2.getType()))
@@ -100,6 +101,11 @@ public class DeviceService {
             kindTypeForCornerFloor2 = Types.KIND_LUNCH.getType(); // kindType=4이니까 LUNCH=1로 변환
         }
 
+        // TODO: 조식 CORNER 메뉴 처리
+        if (kindType.equals(Types.KIND_BREAKFAST_CORNER.getType())) {
+            kindTypeForCornerFloor2 = Types.KIND_BREAKFAST.getType();
+        }
+
         Optional<Meal> meal = sqlMealRepository.findByDate(
                 bldgTypeForBldg1_2,
                 dateReqDto.getLangType(),
@@ -109,6 +115,9 @@ public class DeviceService {
         if (meal.isPresent()) {
             result = meal.get().getMenu();
             if (kindType.equals(Types.KIND_LUNCH_CORNER.getType())) {
+                result = meal.get().getSpecial();
+            }
+            if (kindType.equals((Types.KIND_BREAKFAST_CORNER.getType()))) {
                 result = meal.get().getSpecial();
             }
         }

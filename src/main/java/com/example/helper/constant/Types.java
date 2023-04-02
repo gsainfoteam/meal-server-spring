@@ -11,6 +11,7 @@ public enum Types {
     KIND_DINNER(2),
     KIND_LUNCH_CORNER(3),
     KIND_LUNCH_BLDG1_2(4),
+    KIND_BREAKFAST_CORNER(5),
     DATE_MON(1),
     DATE_TUE(2),
     DATE_WED(3),
