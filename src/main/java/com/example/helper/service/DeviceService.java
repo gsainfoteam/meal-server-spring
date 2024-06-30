@@ -6,11 +6,14 @@ import com.example.helper.dto.DateMealDto;
 import com.example.helper.dto.DateReqDto;
 import com.example.helper.entity.Meal;
 import com.example.helper.repository.SqlMealRepository;
-import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -32,7 +35,7 @@ public class DeviceService {
 
         // TODO: exception handling(target data is not in DB)
         if (checkAllMenuEqualToNewLine(result)) {
-            throw new IllegalStateException(Messages.MOBILE_ALL_MEAL_EMPTY_ERROR.getMessages());
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, Messages.MOBILE_ALL_MEAL_EMPTY_ERROR.getMessages());
         }
         return result;
     }
@@ -127,10 +130,10 @@ public class DeviceService {
         return result;
     }
 
-/*
-이 밑에 함수들은 Util.java로 분리할까? 그러면 다른 사람들의 util 함수들이랑 섞여서 더 힘들라나...
-근데 차피 IDE 있어서 찾기 쉬울텐데 Util로 다 모을까요?
-*/
+    /*
+    이 밑에 함수들은 Util.java로 분리할까? 그러면 다른 사람들의 util 함수들이랑 섞여서 더 힘들라나...
+    근데 차피 IDE 있어서 찾기 쉬울텐데 Util로 다 모을까요?
+    */
     public String convIfEmptyMenu(String meal) {
         if (meal.isEmpty()) {
             return Messages.EMPTY_MEAL.getMessages();
