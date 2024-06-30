@@ -142,19 +142,11 @@ public class DeviceService {
     }
 
     public String conv2DateStr(String year, String month, String date) {
-        String result = "";
-        result = year + "-" + padZero(month) + "-" + padZero(date);
-        return result;
+        return year + "-" + padZero(month) + "-" + padZero(date);
     }
 
     public String padZero(String str) {
-        String result = "";
-        if (str.length() == 1) {
-            result = "0" + str;
-        } else {
-            result = str;
-        }
-        return result;
+        return String.format("%2s", str).replace(' ', '0');
     }
 
     public boolean checkAllMenuEqualToNewLine(DateMealDto menus) {
