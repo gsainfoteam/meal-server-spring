@@ -38,6 +38,15 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      - name: Setup Infisical
+        uses: Infisical/secrets-action@v1
+        with:
+          client-id: ${{ secrets.INFISICAL_CLIENT_ID }}
+          client-secret: ${{ secrets.INFISICAL_CLIENT_SECRET }}
+          env-slug: prod
+          project-slug: meal-f-qse
+          domain: ${{ secrets.INFISICAL_DOMAIN }}
+
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
