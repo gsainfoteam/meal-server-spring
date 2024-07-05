@@ -48,7 +48,7 @@ public class Meal {
         menu += this.bldg + "\n\n";
         menu += this.menu;
 //        if(kindType == Types.KIND_LUNCH.getType()) {
-        if(!special.isBlank()) {
+        if(special != null && !special.isBlank()) {
             if (langType == Types.LANG_KOR.getType()) {
                 menu += "\n\\코너\\\n";
                 menu += this.special;
